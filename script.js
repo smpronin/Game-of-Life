@@ -1,107 +1,72 @@
-/* const person = {
-  name: ['Bob', 'Smith'],
-  age: 32,
-  gender: 'male',
-  interests: ['music', 'skiing'],
-  bio: function() {
-    alert(this.name[0] + ' ' + this.name[1] + ' is ' + this.age + ' years old. He likes ' + this.interests[0] + ' and ' + this.interests[1] + '.');
-  },
-  greeting: function() {
-    alert('Hi! I\'m ' + this.name[0] + '.');
+'use strict';
+
+const canvas = document.querySelector('canvas');
+const ctx = canvas.getContext('2d');
+
+const width = canvas.width = window.innerWidth;
+const height = canvas.height = window.innerHeight;
+
+console.log(canvas);
+
+class Cell {
+  constructor(x, y, width, height) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.alive = false;
+    this.color = null;
+  }
+}
+
+Cell.prototype.draw = function (color) {
+  ctx.beginPath();
+  ctx.fillStyle = color; //'black';
+  ctx.strokeStyle = 'blue';
+  ctx.rect(this.x, this.y, this.width, this.height);
+  ctx.fill();
+  ctx.stroke();
+  ctx.closePath();
+}
+
+
+let brick = [];
+let brickinit = {
+  rowNo: 10,
+  lineNo: 10,
+  width: null,
+  height: null,
+  color: {
+    dead: 'black',
+    alive: 'white'
   }
 };
 
+brickinit.width = Math.floor(width / brickinit.rowNo);
+brickinit.height = Math.floor(height / brickinit.lineNo);
 
-class Person {
-  constructor(name) {
-    this.name = name;
-    this.greeting = function () {
-      alert('Hi! I\'m ' + this.name + '.');
-    };
+
+for (let r = 0; r < brickinit.rowNo; r++) {
+  brick[r] = [];
+  for (let l = 0; l < brickinit.lineNo; l++) {
+    brick[r][l] = new Cell(brickinit.width * r, brickinit.height * l, brickinit.width, brickinit.height);
+    /* if(brick[r][l].alive==true) {
+      brick[r][l].color = brickinit.color.alive;
+    } else {
+      brick[r][l] = brickinit.color.dead
+    } */
+    // brick[r][l].alive==true ? brick[r][l].color = brickinit.color.alive : brick[r][l] = brickinit.color.dead;
+    brick[r][l].draw(brick[r][l].color);
   }
 }
 
-let person1 = new Person('Bob');
-let person2 = new Person('Sarah');
-
-console.log(person);
-console.log(person1.greeting()) */
-
-/* class Person {
-  constructor(first, last, age, gender, interests) {
-    this.name = {
-      first: first,
-      last: last
-    };
-    this.age = age;
-    this.gender = gender;
-    this.interests = interests;
-    this.bio = function () {
-      alert(this.name.first + ' ' + this.name.last + ' is ' + this.age + ' years old. He likes ' + this.interests[0] + ' and ' + this.interests[1] + '.');
-    };
-    this.farewell = function() {
-      alert(this.name.first + ' has left the building. Bye for now!');
-    }
-    this.greeting = function () {
-      alert('Hi! I\'m ' + this.name.first + '.');
-    };
-  }
-}
-
-let person1 = new Person('Bob', 'Smith', 32, 'male', ['music', 'skiing']);
+console.log({ brickinit });
+console.log(brickinit.color.alive);
+/*
+let testBrick = new Cell(0,0,brickinit.width, brickinit.height);
+console.log(testBrick);
+testBrick.draw();
+console.log({Cell}); */
+console.log(brick);
 
 
-console.log(person1);
-
-
-
-Person.prototype.farewell = function() {
-  alert(this.name.first + ' has left the building. Bye for now!');
-};
-
-
-let person2 = Object.create(person1);
-
-let person3 = new person1.constructor('Karen', 'Stephenson', 26, 'female', ['playing drums', 'mountain climbing']);
-
-
-console.log(person2);
-console.log(person1.constructor);
-// console.log(person1.farewell()); */
-
-class Person {
-  constructor(first, last, age, gender, interests) {
-    this.name = {
-      first,
-      last
-    };
-    this.age = age;
-    this.gender = gender;
-    this.interests = interests;
-  }
-
-  greeting() {
-    console.log(`Hi! I'm ${this.name.first}`);
-  };
-
-  farewell() {
-    console.log(`${this.name.first} has left the building. Bye for now!`);
-  };
-}
-
-class Teacher extends Person {
-  constructor(first, last, age, gender, interests, subject, grade) {
-    super(first, last, age, gender, interests);
-
-    // subject and grade are specific to Teacher
-    this.subject = subject;
-    this.grade = grade;
-  }
-}
-
-let han = new Person('Han', 'Solo', 25, 'male', ['Smuggling']);
-han.greeting();
-
-let snape = new Teacher('Severus', 'Snape', 58, 'male', ['Potions'], 'Dark arts', 5);
-snape.greeting();
-snape.farewell();
