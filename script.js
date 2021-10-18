@@ -55,18 +55,35 @@ for (let r = 0; r < brickinit.rowNo; r++) {
     } else {
       brick[r][l] = brickinit.color.dead
     } */
-    // brick[r][l].alive==true ? brick[r][l].color = brickinit.color.alive : brick[r][l] = brickinit.color.dead;
-    brick[r][l].draw(brick[r][l].color);
+    // brick[r][l].alive==true ? brick[r][l].color = brickinit.color.alive : brick[r][l].color = brickinit.color.dead;
+    // brick[r][l].draw(brick[r][l].color);
   }
 }
 
-console.log({ brickinit });
-console.log(brickinit.color.alive);
+// console.log({ brickinit });
+// console.log(brickinit.color.alive);
 /*
 let testBrick = new Cell(0,0,brickinit.width, brickinit.height);
 console.log(testBrick);
 testBrick.draw();
 console.log({Cell}); */
-console.log(brick);
+// console.log(brick);
+// console.log({document});
+// console.log({window})
 
+// brick[9][0].alive = true;
 
+function draw() {
+
+  for (let r = 0; r < brickinit.rowNo; r++) {
+    for (let l = 0; l < brickinit.lineNo; l++) {
+      brick[r][l].alive == true ? brick[r][l].color = brickinit.color.alive : brick[r][l].color = brickinit.color.dead;
+      brick[r][l].draw(brick[r][l].color);
+    }
+  }
+
+requestAnimationFrame(draw);
+
+}
+
+draw();
