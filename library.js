@@ -1,16 +1,33 @@
-document.addEventListener('click', clikHandler, false);
-// document.addEventListener('keydown', keyDownHandler, false);
+document.addEventListener('click', clickHandler, false);
+document.addEventListener('keydown', keyDownHandler, false);
 // document.addEventListener('keyup', keyUpHandler, false);
 
-function clikHandler(e) {
-// console.log(e);
-let output = {
-    x:e.x,
-    y:e.y
-}
-return 
+function clickHandler(e) {
+
+    click.x = e.x;
+    click.y = e.y;
+    click.handled = false;
+
 }
 
-// function keyDownHandler(k) {
-//     console.log(k)
-// }
+function keyDownHandler(e) {
+    // console.log(e, game.started);
+    if (e.code == 'Space') {
+        game.started == true ? game.started = false : game.started = true;
+    }
+}
+
+function sleep(milliseconds) {
+    const date = Date.now();
+    let currentDate = null;
+    do {
+        currentDate = Date.now();
+    } while (currentDate - date < milliseconds);
+}
+
+function drawText(text, textStyle) {
+    ctx.font = textStyle.font;
+    ctx.fillStyle = textStyle.fillStyle;
+    ctx.fillText(text, textStyle.x, textStyle.y, textStyle.maxWidth);
+    // console.log({ctx});
+}
