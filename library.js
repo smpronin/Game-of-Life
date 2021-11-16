@@ -11,9 +11,13 @@ function clickHandler(e) {
 }
 
 function keyDownHandler(e) {
-    // console.log(e, game.started);
+    // console.log(e);
     if (e.code == 'Space') {
         game.started == true ? game.started = false : game.started = true;
+    }
+
+    if (e.code == 'ArrowRight') {
+        game.stepRequest = true;
     }
 }
 

@@ -25,7 +25,8 @@ let click = {
 let game = {
   started: false,
   frameDuration: 1000,
-  frameStartTime: null
+  frameStartTime: null,
+  stepRequest: false
 }
 
 class Cell {
@@ -43,7 +44,7 @@ class Cell {
 
 Cell.prototype.draw = function (color) {
   ctx.beginPath();
-  ctx.fillStyle = color; //'black';
+  ctx.fillStyle = color;
   ctx.strokeStyle = 'blue';
   ctx.rect(this.x, this.y, this.width, this.height);
   ctx.fill();
@@ -77,80 +78,95 @@ for (let r = 0; r < brickinit.rowCount; r++) {
 
 function draw() {
 
-  // console.log({brick});
+  if (game.stepRequest == true) {
 
-  for (let r = 0; r < brickinit.rowCount; r++) {
-    for (let l = 0; l < brickinit.lineCount; l++) {
-      brick[r][l].neighborCount = 0;
+    game.stepRequest = false;
 
-      if (r - 1 >= 0 && l - 1 >= 0) {
-        if (brick[r - 1][l - 1].alive == true) { brick[r][l].neighborCount++ }
-      }
-      if (l - 1 >= 0) {
-        if (brick[r][l - 1].alive == true) { brick[r][l].neighborCount++ }
-      }
-      if (r + 1 <= brickinit.rowCount - 1 && l - 1 >= 0) {
-        if (brick[r + 1][l - 1].alive == true) { brick[r][l].neighborCount++ }
-      }
-      if (r - 1 >= 0) {
-        if (brick[r - 1][l].alive == true) { brick[r][l].neighborCount++ }
-      }
-      if (r + 1 <= brickinit.rowCount - 1) {
-        if (brick[r + 1][l].alive == true) { brick[r][l].neighborCount++ }
-      }
-      if (r - 1 >= 0 && l + 1 <= brickinit.lineCount - 1) {
-        if (brick[r - 1][l + 1].alive == true) { brick[r][l].neighborCount++ }
-      }
-      if (l + 1 <= brickinit.lineCount - 1) {
-        if (brick[r][l + 1].alive == true) { brick[r][l].neighborCount++ }
-      }
-      if (r + 1 <= brickinit.rowCount - 1 && l + 1 <= brickinit.lineCount - 1) {
-        if (brick[r + 1][l + 1].alive == true) { brick[r][l].neighborCount++ }
+    if (game.started == false) {
+
+      if (click.handled == false) {
+        let r = Math.floor(click.x / brickinit.width);
+        let l = Math.floor(click.y / brickinit.height);
+        brick[r][l].alive == true ? brick[r][l].alive = false : brick[r][l].alive = true;
+        click.handled = true;
       }
 
-    }
-  }
-
-  for (let r = 0; r < brickinit.rowCount; r++) {
-    for (let l = 0; l < brickinit.lineCount; l++) {
-      brick[r][l].alive == true ? brick[r][l].color = brickinit.color.alive : brick[r][l].color = brickinit.color.dead;
-      brick[r][l].draw(brick[r][l].color);
-    }
-  }
-
-  if (game.started == true) {
-
-    for (let r = 0; r < brickinit.rowCount; r++) {
-      for (let l = 0; l < brickinit.lineCount; l++) {
-        if (brick[r][l].alive == false && brick[r][l].neighborCount == 3) { brick[r][l].changeState = true }
-        if (brick[r][l].alive == true && brick[r][l].neighborCount == 3) { brick[r][l].changeState = false }
-        else { brick[r][l].changeState = true }
-      }
     }
 
     for (let r = 0; r < brickinit.rowCount; r++) {
       for (let l = 0; l < brickinit.lineCount; l++) {
-        if (brick[r][l].changeState == true) {
-          brick[r][l].alive == true ? brick[r][l].alive = false : brick[r][l].alive = true;
-          brick[r][l].changeState = false;
+        brick[r][l].neighborCount = 0;
+
+        if (r - 1 >= 0 && l - 1 >= 0) {
+          if (brick[r - 1][l - 1].alive == true) { brick[r][l].neighborCount++ }
+        }
+        if (l - 1 >= 0) {
+          if (brick[r][l - 1].alive == true) { brick[r][l].neighborCount++ }
+        }
+        if (r + 1 <= brickinit.rowCount - 1 && l - 1 >= 0) {
+          if (brick[r + 1][l - 1].alive == true) { brick[r][l].neighborCount++ }
+        }
+        if (r - 1 >= 0) {
+          if (brick[r - 1][l].alive == true) { brick[r][l].neighborCount++ }
+        }
+        if (r + 1 <= brickinit.rowCount - 1) {
+          if (brick[r + 1][l].alive == true) { brick[r][l].neighborCount++ }
+        }
+        if (r - 1 >= 0 && l + 1 <= brickinit.lineCount - 1) {
+          if (brick[r - 1][l + 1].alive == true) { brick[r][l].neighborCount++ }
+        }
+        if (l + 1 <= brickinit.lineCount - 1) {
+          if (brick[r][l + 1].alive == true) { brick[r][l].neighborCount++ }
+        }
+        if (r + 1 <= brickinit.rowCount - 1 && l + 1 <= brickinit.lineCount - 1) {
+          if (brick[r + 1][l + 1].alive == true) { brick[r][l].neighborCount++ }
+        }
+
+      }
+    }
+
+    if (game.started == true) {
+
+      for (let r = 0; r < brickinit.rowCount; r++) {
+        for (let l = 0; l < brickinit.lineCount; l++) {
+          if (brick[r][l].alive == false && brick[r][l].neighborCount == 3) {
+            brick[r][l].changeState = true
+            console.log('1', r, l, brick[r][l].neighborCount);
+          }
+          if (brick[r][l].alive == true && brick[r][l].neighborCount == 3 || brick[r][l].neighborCount == 2) {
+            brick[r][l].changeState = false
+            console.log('2', r, l, brick[r][l].neighborCount);
+          }
+          else {
+            brick[r][l].changeState = true
+            console.log('3', r, l, brick[r][l].neighborCount);
+          }
+        }
+      }
+
+      for (let r = 0; r < brickinit.rowCount; r++) {
+        for (let l = 0; l < brickinit.lineCount; l++) {
+          if (brick[r][l].changeState == true) {
+            brick[r][l].alive == true ? brick[r][l].alive = false : brick[r][l].alive = true;
+            brick[r][l].changeState = false;
+          }
         }
       }
     }
 
-    // sleep(1000);
-
-  } else {
-
-    if (click.handled == false) {
-      let r = Math.floor(click.x / brickinit.width);
-      let l = Math.floor(click.y / brickinit.height);
-      brick[r][l].alive == true ? brick[r][l].alive = false : brick[r][l].alive = true;
-      click.handled = true;
+    for (let r = 0; r < brickinit.rowCount; r++) {
+      for (let l = 0; l < brickinit.lineCount; l++) {
+        brick[r][l].alive == true ? brick[r][l].color = brickinit.color.alive : brick[r][l].color = brickinit.color.dead;
+        brick[r][l].draw(brick[r][l].color);
+      }
     }
 
-    drawText('Press Space', textStyle);
-  }
+    if (game.started == false) {
+      drawText('Press Space', textStyle);
+    }
 
+    // console.log(brick[0][0].neighborCount);
+  }
   requestAnimationFrame(draw);
 
 }
