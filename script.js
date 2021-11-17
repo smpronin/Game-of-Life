@@ -30,7 +30,7 @@ let mouse = {
 
 let game = {
   started: false,
-  frameDuration: 1000,
+  frameDuration: 500,
   frameStartTime: Date.now(),
   stepRequest: false
 }
@@ -62,8 +62,8 @@ Cell.prototype.draw = function (color) {
 
 let brick = [];
 let brickinit = {
-  rowCount: 20,
-  lineCount: 20,
+  rowCount: 30,
+  lineCount: 30,
   width: null,
   height: null,
   color: {
