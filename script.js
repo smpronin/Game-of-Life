@@ -13,7 +13,7 @@ let textStyle = {
   y: 20,
   font: '20px serif',
   fillStyle: '#35A1FF',
-  maxWidth: 200
+  maxWidth: 400
 }
 
 let mouse = {
@@ -217,7 +217,7 @@ function draw() {
   }
 
   if (game.started == false) {
-    drawText('Press Space', textStyle);
+    drawText('Select Cells and press Space to Start', textStyle);
   }
 
   requestAnimationFrame(draw);
