@@ -16,18 +16,26 @@ let textStyle = {
   maxWidth: 200
 }
 
-let click = {
+let mouse = {
+  click: {
+    x: null,
+    y: null,
+    handled: true
+  },
   x: null,
   y: null,
-  handled: true
+  down: false,
+  moved: false
 }
 
 let game = {
   started: false,
   frameDuration: 1000,
-  frameStartTime: null,
+  frameStartTime: Date.now(),
   stepRequest: false
 }
+
+// console.log(game.frameStartTime);
 
 class Cell {
   constructor(x, y, width, height) {
@@ -54,8 +62,8 @@ Cell.prototype.draw = function (color) {
 
 let brick = [];
 let brickinit = {
-  rowCount: 10,
-  lineCount: 10,
+  rowCount: 20,
+  lineCount: 20,
   width: null,
   height: null,
   color: {
@@ -78,26 +86,48 @@ for (let r = 0; r < brickinit.rowCount; r++) {
 
 function draw() {
 
+  // Выставление первоначальных условий
+  if (game.started == false) {
+
+    if (mouse.click.handled == false) {
+      let r = Math.floor(mouse.click.x / brickinit.width);
+      let l = Math.floor(mouse.click.y / brickinit.height);
+      brick[r][l].alive == true ? brick[r][l].alive = false : brick[r][l].alive = true;
+      mouse.click.handled = true;
+    }
+
+    if (mouse.down == true && mouse.moved == true) {
+      let r = Math.floor(mouse.x / brickinit.width);
+      let l = Math.floor(mouse.y / brickinit.height);
+      brick[r][l].alive = true;
+      mouse.moved = false;
+    }
+    if (mouse.moved == true) {
+      mouse.moved = false
+    }
+
+  }
+
+  // Расчёт времени кадра
+  if (Date.now() - game.frameStartTime >= game.frameDuration) {
+    game.stepRequest = true;
+    game.frameStartTime = Date.now();
+  }
+
+  if (game.started == true) {
+    mouse.click.handled = true;
+  }
+
+  // Подсчёт количества соседей у каждой клетки
   if (game.stepRequest == true) {
 
     game.stepRequest = false;
-
-    if (game.started == false) {
-
-      if (click.handled == false) {
-        let r = Math.floor(click.x / brickinit.width);
-        let l = Math.floor(click.y / brickinit.height);
-        brick[r][l].alive == true ? brick[r][l].alive = false : brick[r][l].alive = true;
-        click.handled = true;
-      }
-
-    }
 
     for (let r = 0; r < brickinit.rowCount; r++) {
       for (let l = 0; l < brickinit.lineCount; l++) {
         brick[r][l].neighborCount = 0;
 
-        if (r - 1 >= 0 && l - 1 >= 0) {
+        /* if (r - 1 >= 0 && l - 1 >= 0) {
           if (brick[r - 1][l - 1].alive == true) { brick[r][l].neighborCount++ }
         }
         if (l - 1 >= 0) {
@@ -120,26 +150,47 @@ function draw() {
         }
         if (r + 1 <= brickinit.rowCount - 1 && l + 1 <= brickinit.lineCount - 1) {
           if (brick[r + 1][l + 1].alive == true) { brick[r][l].neighborCount++ }
-        }
+        } */
+
+        let R_1 = r - 1;
+        let R1 = r + 1
+        let L_1 = l - 1;
+        let L1 = l + 1;
+
+        if (R_1 == -1) { R_1 = brickinit.rowCount - 1 }
+        if (R1 == brickinit.rowCount) { R1 = 0 }
+        if (L_1 == -1) { L_1 = brickinit.lineCount - 1 }
+        if (L1 == brickinit.rowCount) { L1 = 0 }
+
+        if (brick[R_1][L_1].alive == true) { brick[r][l].neighborCount++ }
+        if (brick[r][L_1].alive == true) { brick[r][l].neighborCount++ }
+        if (brick[R1][L_1].alive == true) { brick[r][l].neighborCount++ }
+        if (brick[R_1][l].alive == true) { brick[r][l].neighborCount++ }
+        if (brick[R1][l].alive == true) { brick[r][l].neighborCount++ }
+        if (brick[R_1][L1].alive == true) { brick[r][l].neighborCount++ }
+        if (brick[r][L1].alive == true) { brick[r][l].neighborCount++ }
+        if (brick[R1][L1].alive == true) { brick[r][l].neighborCount++ }
+
 
       }
     }
 
+    // Просчёт логики игры
     if (game.started == true) {
 
       for (let r = 0; r < brickinit.rowCount; r++) {
         for (let l = 0; l < brickinit.lineCount; l++) {
           if (brick[r][l].alive == false && brick[r][l].neighborCount == 3) {
             brick[r][l].changeState = true
-            console.log('1', r, l, brick[r][l].neighborCount);
+            // console.log('1', r, l, brick[r][l].neighborCount);
           }
-          if (brick[r][l].alive == true && brick[r][l].neighborCount == 3 || brick[r][l].neighborCount == 2) {
+          if (brick[r][l].alive == true && (brick[r][l].neighborCount == 3 || brick[r][l].neighborCount == 2)) {
             brick[r][l].changeState = false
-            console.log('2', r, l, brick[r][l].neighborCount);
+            // console.log('2', r, l, brick[r][l].neighborCount);
           }
-          else {
+          if (brick[r][l].alive == true && (brick[r][l].neighborCount != 3 && brick[r][l].neighborCount != 2)) {
             brick[r][l].changeState = true
-            console.log('3', r, l, brick[r][l].neighborCount);
+            // console.log('3', r, l, brick[r][l].neighborCount);
           }
         }
       }
@@ -154,19 +205,21 @@ function draw() {
       }
     }
 
-    for (let r = 0; r < brickinit.rowCount; r++) {
-      for (let l = 0; l < brickinit.lineCount; l++) {
-        brick[r][l].alive == true ? brick[r][l].color = brickinit.color.alive : brick[r][l].color = brickinit.color.dead;
-        brick[r][l].draw(brick[r][l].color);
-      }
-    }
-
-    if (game.started == false) {
-      drawText('Press Space', textStyle);
-    }
-
-    // console.log(brick[0][0].neighborCount);
+    // console.log({ brick });
   }
+
+  // Отрисовка игры и интерфейса
+  for (let r = 0; r < brickinit.rowCount; r++) {
+    for (let l = 0; l < brickinit.lineCount; l++) {
+      brick[r][l].alive == true ? brick[r][l].color = brickinit.color.alive : brick[r][l].color = brickinit.color.dead;
+      brick[r][l].draw(brick[r][l].color);
+    }
+  }
+
+  if (game.started == false) {
+    drawText('Press Space', textStyle);
+  }
+
   requestAnimationFrame(draw);
 
 }
