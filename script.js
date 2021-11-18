@@ -1,29 +1,32 @@
 'use strict';
 
-const canvas = document.querySelector('canvas');
+// const canvas = document.querySelector('canvas');
+let canvas = document.getElementById('canvas1');
 const ctx = canvas.getContext('2d');
 
 canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.height = window.innerHeight - 100;
 
-console.log(canvas);
+console.log({canvas});
 
 let textStyle = {
   x: 0,
-  y: 20,
-  font: '20px serif',
+  y: 50,
+  font: '40px serif',
   fillStyle: '#35A1FF',
-  maxWidth: 400
+  // maxWidth: 400
 }
 
 let mouse = {
   click: {
     x: null,
     y: null,
+    targetId: null,
     handled: true
   },
   x: null,
   y: null,
+  targetId: null,
   down: false,
   moved: false
 }
@@ -86,17 +89,19 @@ for (let r = 0; r < brickinit.rowCount; r++) {
 
 function draw() {
 
+  // console.log(event.type);
+
   // Выставление первоначальных условий
   if (game.started == false) {
 
-    if (mouse.click.handled == false) {
+    if (mouse.click.handled == false && mouse.click.targetId == 'canvas1') {
       let r = Math.floor(mouse.click.x / brickinit.width);
       let l = Math.floor(mouse.click.y / brickinit.height);
       brick[r][l].alive == true ? brick[r][l].alive = false : brick[r][l].alive = true;
       mouse.click.handled = true;
     }
 
-    if (mouse.down == true && mouse.moved == true) {
+    if (mouse.down == true && mouse.moved == true && mouse.targetId == 'canvas1') {
       let r = Math.floor(mouse.x / brickinit.width);
       let l = Math.floor(mouse.y / brickinit.height);
       brick[r][l].alive = true;
@@ -126,31 +131,6 @@ function draw() {
     for (let r = 0; r < brickinit.rowCount; r++) {
       for (let l = 0; l < brickinit.lineCount; l++) {
         brick[r][l].neighborCount = 0;
-
-        /* if (r - 1 >= 0 && l - 1 >= 0) {
-          if (brick[r - 1][l - 1].alive == true) { brick[r][l].neighborCount++ }
-        }
-        if (l - 1 >= 0) {
-          if (brick[r][l - 1].alive == true) { brick[r][l].neighborCount++ }
-        }
-        if (r + 1 <= brickinit.rowCount - 1 && l - 1 >= 0) {
-          if (brick[r + 1][l - 1].alive == true) { brick[r][l].neighborCount++ }
-        }
-        if (r - 1 >= 0) {
-          if (brick[r - 1][l].alive == true) { brick[r][l].neighborCount++ }
-        }
-        if (r + 1 <= brickinit.rowCount - 1) {
-          if (brick[r + 1][l].alive == true) { brick[r][l].neighborCount++ }
-        }
-        if (r - 1 >= 0 && l + 1 <= brickinit.lineCount - 1) {
-          if (brick[r - 1][l + 1].alive == true) { brick[r][l].neighborCount++ }
-        }
-        if (l + 1 <= brickinit.lineCount - 1) {
-          if (brick[r][l + 1].alive == true) { brick[r][l].neighborCount++ }
-        }
-        if (r + 1 <= brickinit.rowCount - 1 && l + 1 <= brickinit.lineCount - 1) {
-          if (brick[r + 1][l + 1].alive == true) { brick[r][l].neighborCount++ }
-        } */
 
         let R_1 = r - 1;
         let R1 = r + 1
@@ -217,7 +197,7 @@ function draw() {
   }
 
   if (game.started == false) {
-    drawText('Select Cells and press Space to Start', textStyle);
+    drawText('Select Cells and press Start', textStyle);
   }
 
   requestAnimationFrame(draw);
